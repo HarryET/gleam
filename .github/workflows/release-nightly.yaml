@@ -9,26 +9,8 @@ env:
   RUSTFLAGS: "-D warnings"
 
 jobs:
-  nightly-last-run:
-    runs-on: ubuntu-latest
-    name: Check latest commit
-    outputs:
-      should_run: ${{ steps.should_run.outputs.should_run }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: print latest_commit
-        run: echo ${{ github.sha }}
-
-      - id: should_run
-        continue-on-error: true
-        name: check latest commit is less than a day
-        if: ${{ github.event_name == 'schedule' }}
-        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) && echo "::set-output name=should_run::false"
-
   build-nightly-clean:
     runs-on: ubuntu-latest
-    needs: [ nightly-last-run ]
-    if: ${{ needs.nightly-last-run.outputs.should_run != 'false' }}
     steps:
       - name: Delete old release assets
         uses: mknejp/delete-release-assets@v1
@@ -68,19 +50,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set version
+        id: version
+        run: echo "::set-output name=version-string::$(nightly-$(date +"%y%m%d"))"
+
       - name: Update versions
-        shell: bash
-        run: |
-          version=nightly-$(date +"%y%m%d")
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-core/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-core/Cargo.toml
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-wasm/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-wasm/Cargo.toml
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-cli/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-cli/Cargo.toml
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: '/(version) (=) (")([\d\.\-A-Za-z]+)(")/m'
+          replace: "version = \"${{steps.version.outputs.version-string}}\""
+          regex: true
+          include: "**/Cargo.toml"
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -105,15 +85,13 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          VERSION=nightly-$(date +"%y%m%d")
-
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            ARCHIVE="gleam-$VERSION-${{ matrix.build }}.zip"
+            ARCHIVE="gleam-${{steps.version.outputs.version-string}}-${{ matrix.build }}.zip"
             cp "target/release/gleam.exe" "gleam.exe"
             7z a "$ARCHIVE" "gleam.exe"
             rm gleam.exe
           else
-            ARCHIVE="gleam-$VERSION-${{ matrix.build }}.tar.gz"
+            ARCHIVE="gleam-${{steps.version.outputs.version-string}}-${{ matrix.build }}.tar.gz"
             cp "target/release/gleam" "gleam"
             tar -czvf "$ARCHIVE" "gleam"
             rm gleam
@@ -158,19 +136,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set version
+        id: version
+        run: echo "::set-output name=version-string::$(nightly-$(date +"%y%m%d"))"
+
       - name: Update versions
-        shell: bash
-        run: |
-          version=nightly-$(date +"%y%m%d")
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-core/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-core/Cargo.toml
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-wasm/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-wasm/Cargo.toml
-          
-          sed "s/^version = \".*\"\$/version = \"$version\"/" compiler-cli/Cargo.toml > /tmp/gleam-cargo.toml
-          mv /tmp/gleam-cargo.toml compiler-cli/Cargo.toml
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: '/(version) (=) (")([\d\.\-A-Za-z]+)(")/m'
+          replace: "version = \"${{steps.version.outputs.version-string}}\""
+          regex: true
+          include: "**/Cargo.toml"
 
       - name: Link to predefined musl toolchain
         run: |
@@ -191,9 +167,7 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          VERSION=nightly-$(date +"%y%m%d")
-
-          ARCHIVE="gleam-$VERSION-linux-amd64.tar.gz"
+          ARCHIVE="gleam-${{steps.version.outputs.version-string}}-linux-amd64.tar.gz"
           cp "target/x86_64-unknown-linux-musl/release/gleam" "gleam"
           tar -czvf "$ARCHIVE" "gleam"
           openssl dgst -r -sha256 -out "$ARCHIVE".sha256 "$ARCHIVE"
