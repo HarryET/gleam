@@ -41,11 +41,13 @@ use error::*;
 use hydrator::Hydrator;
 use itertools::Itertools;
 
+use serde::{Deserialize, Serialize};
+
 pub trait HasType {
     fn type_(&self) -> Arc<Type>;
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum Type {
     /// A nominal (named) type such as `Int`, `Float`, or a programmer defined
     /// custom type such as `Person`. The type can take other types as
