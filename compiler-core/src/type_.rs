@@ -252,14 +252,14 @@ pub fn collapse_links(t: Arc<Type>) -> Arc<Type> {
     t
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct AccessorsMap {
     pub public: bool,
     pub type_: Arc<Type>,
     pub accessors: HashMap<String, RecordAccessor>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RecordAccessor {
     // TODO: smaller int. Doesn't need to be this big
     pub index: u64,
@@ -415,7 +415,7 @@ impl ModuleValueConstructor {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Module {
     pub name: Vec<String>,
     pub origin: Origin,
@@ -506,7 +506,7 @@ impl TypeVar {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct TypeConstructor {
     pub public: bool,
     pub origin: SrcSpan,

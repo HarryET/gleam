@@ -120,7 +120,7 @@ where
             .join(info.name.replace('/', "@"))
             .with_extension("gleam_module");
         let bytes = self.io.read_bytes(&path)?;
-        metadata::Metadata::decode(self.ids.clone(), BufReader::new(bytes.as_slice()))
+        metadata::Metadata::decode(BufReader::new(bytes.as_slice()))
     }
 
     fn read_source_files(&self) -> Result<HashMap<String, Input>> {
