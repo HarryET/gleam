@@ -1,9 +1,10 @@
 use super::Error;
 use crate::ast::{CallArg, SrcSpan};
 use itertools::Itertools;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct FieldMap {
     pub arity: u32,
     pub fields: HashMap<String, u32>,

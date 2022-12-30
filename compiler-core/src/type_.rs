@@ -267,7 +267,7 @@ pub struct RecordAccessor {
     pub type_: Arc<Type>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum ValueConstructorVariant {
     /// A locally defined variable or function parameter
     LocalVariable { location: SrcSpan },
@@ -434,7 +434,7 @@ pub enum PatternConstructor {
     },
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum TypeVar {
     /// Unbound is an unbound variable. It is one specific type but we don't
     /// know what yet in the inference process. It has a unique id which can be used to
@@ -515,7 +515,7 @@ pub struct TypeConstructor {
     pub typ: Arc<Type>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct ValueConstructor {
     pub public: bool,
     pub variant: ValueConstructorVariant,

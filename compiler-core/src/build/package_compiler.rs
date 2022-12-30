@@ -1,3 +1,4 @@
+use crate::metadata::Metadata;
 use crate::{
     ast::{SrcSpan, TypedModule, UntypedModule},
     build::{dep_tree, Mode, Module, Origin, Package, Target},
@@ -8,7 +9,6 @@ use crate::{
         memory::InMemoryFileSystem, CommandExecutor, FileSystemIO, FileSystemReader,
         FileSystemWriter, Stdio,
     },
-    metadata::ModuleEncoder,
     parse::extra::ModuleExtra,
     paths, type_,
     uid::UniqueIdGenerator,
@@ -281,7 +281,7 @@ where
             // Write metadata file
             let name = format!("{}.gleam_module", &module_name);
             let path = self.out.join(paths::ARTEFACT_DIRECTORY_NAME).join(name);
-            let bytes = ModuleEncoder::new(&module.ast.type_info).encode()?;
+            let bytes = Metadata::encode(&module.ast.type_info)?;
             self.io.write_bytes(&path, &bytes)?;
             self.add_build_journal(path);
 
