@@ -1142,8 +1142,7 @@ impl TypedExprBitStringSegment {
 pub type TypedConstantBitStringSegmentOption = BitStringSegmentOption<TypedConstant>;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-pub enum BitStringSegmentOption<Value>
-{
+pub enum BitStringSegmentOption<Value> {
     Binary {
         location: SrcSpan,
     },

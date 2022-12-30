@@ -433,8 +433,7 @@ where
     ) -> Result<(), Error> {
         for path in self.io.gleam_metadata_files(&build_dir) {
             let reader = BufReader::new(self.io.reader(&path)?);
-            let module = metadata::Metadata::decode(reader)?;
-            //let module = metadata::ModuleDecoder::new(self.ids.clone()).read(reader)?;
+            let module = metadata::Metadata::decode(self.ids.clone(), reader)?;
             let _ = self
                 .importable_modules
                 .insert(module.name.join("/"), module)
