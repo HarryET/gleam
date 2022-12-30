@@ -596,7 +596,8 @@ impl CacheMetadata {
 
     pub fn from_binary(bytes: &[u8]) -> Result<Self, String> {
         let config = bincode::config::standard();
-        let (res, _) = bincode::serde::decode_from_slice(bytes, config).map_err(|e| e.to_string())?;
+        let (res, _) =
+            bincode::serde::decode_from_slice(bytes, config).map_err(|e| e.to_string())?;
         res
     }
 }

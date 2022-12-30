@@ -1,9 +1,9 @@
+use std::io::BufReader;
 use std::{
     collections::{HashMap, HashSet},
     path::{Path, PathBuf},
     time::{Duration, SystemTime},
 };
-use std::io::BufReader;
 
 // TODO: emit warnings for cached modules even if they are not compiled again.
 
