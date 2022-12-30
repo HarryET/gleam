@@ -28,7 +28,6 @@ strsim = "0.10.0"
 # Data (de)serialisation
 serde = { version = "1.0.130", features = ["derive", "rc"] }
 serde_json = "*"
-bincode = { version = "2.0.0-rc.2", features = ["derive", "serde"] }
 # Enum trait impl macros
 strum = { version = "0.24.0", features = ["derive"] }
 # Template rendering
@@ -65,6 +64,8 @@ base16 = "0.2.1"
 toml = "0.5.8"
 # SPDX license parsing
 spdx = "0.8.0"
+# Binary format de-serialization
+bincode = { version = "2.0.0-rc.2", features = ["serde"] }
 
 [build-dependencies]
 # Data (de)serialisation

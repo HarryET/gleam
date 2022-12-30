@@ -1003,12 +1003,13 @@ where
         let manifest = crate::dependencies::download(telemetry, None, UseManifest::Yes)?;
 
         let options = build::Options {
-            mode: build::Mode::Dev,
+            mode: build::Mode::Lsp,
             target: None,
             perform_codegen: false,
         };
         let mut project_compiler =
             ProjectCompiler::new(config, options, manifest.packages, Box::new(telemetry), io);
+
         // To avoid the Erlang compiler printing to stdout (and thus
         // violating LSP which is currently using stdout) we silence it.
         project_compiler.subprocess_stdio = Stdio::Null;
