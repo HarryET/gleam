@@ -70,6 +70,8 @@ pub struct PackageConfig {
     pub name: String,
     #[serde(default = "default_version")]
     pub version: Version,
+    /// The minimum gleam version
+    pub gleam_version: Option<Range>,
     #[serde(default, alias = "licenses")]
     pub licences: Vec<SpdxLicense>,
     #[serde(default)]
@@ -423,6 +425,7 @@ impl Default for PackageConfig {
             licences: Default::default(),
             links: Default::default(),
             target: Target::Erlang,
+            gleam_version: None,
         }
     }
 }
