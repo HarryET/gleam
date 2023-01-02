@@ -71,7 +71,7 @@ pub struct PackageConfig {
     #[serde(default = "default_version")]
     pub version: Version,
     /// The minimum gleam version
-    pub gleam_version: Option<Range>,
+    pub gleam_version: Option<Version>,
     #[serde(default, alias = "licenses")]
     pub licences: Vec<SpdxLicense>,
     #[serde(default)]
@@ -396,6 +396,7 @@ fn manifest_package(
     ManifestPackage {
         name: name.into(),
         version: Version::parse(version).unwrap(),
+        gleam_version: None,
         build_tools: vec![],
         otp_app: None,
         requirements: requirements.iter().map(|e| (*e).to_string()).collect(),

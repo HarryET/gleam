@@ -58,6 +58,7 @@ fn list_manifest_format() {
             ManifestPackage {
                 name: "root".to_string(),
                 version: Version::parse("1.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -68,6 +69,7 @@ fn list_manifest_format() {
             ManifestPackage {
                 name: "aaa".to_string(),
                 version: Version::new(0, 4, 2),
+                gleam_version: None,
                 build_tools: ["rebar3".into(), "make".into()].into(),
                 otp_app: Some("aaa_app".into()),
                 requirements: vec!["zzz".into(), "gleam_stdlib".into()],
@@ -78,6 +80,7 @@ fn list_manifest_format() {
             ManifestPackage {
                 name: "zzz".to_string(),
                 version: Version::new(0, 4, 0),
+                gleam_version: None,
                 build_tools: ["mix".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -306,6 +309,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "root".to_string(),
                 version: Version::parse("1.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -316,6 +320,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "local1".to_string(),
                 version: Version::parse("1.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -326,6 +331,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "local2".to_string(),
                 version: Version::parse("3.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -350,6 +356,7 @@ fn missing_local_packages() {
             &ManifestPackage {
                 name: "local1".to_string(),
                 version: Version::parse("1.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -360,6 +367,7 @@ fn missing_local_packages() {
             &ManifestPackage {
                 name: "local2".to_string(),
                 version: Version::parse("3.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -387,6 +395,7 @@ fn extra_local_packages() {
             ManifestPackage {
                 name: "local1".to_string(),
                 version: Version::parse("1.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -397,6 +406,7 @@ fn extra_local_packages() {
             ManifestPackage {
                 name: "local2".to_string(),
                 version: Version::parse("3.0.0").unwrap(),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -494,6 +504,7 @@ async fn lookup_package(name: String, version: Version) -> Result<ManifestPackag
         source: ManifestPackageSource::Hex {
             outer_checksum: Base16Checksum(release.outer_checksum),
         },
+        gleam_version: None,
     };
     Ok(manifest)
 }

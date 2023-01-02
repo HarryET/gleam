@@ -168,6 +168,13 @@ pub enum Error {
     #[error("The package {0} is listed in dependencies and dev-dependencies")]
     DuplicateDependency(String),
 
+    #[error("Minimum Gleam version of {required_version} was specified for {name} but {min_version} was found")]
+    IncorrectGleamVersion {
+        name: String,
+        required_version: String,
+        min_version: String,
+    },
+
     #[error("The package was missing required fields for publishing")]
     MissingHexPublishFields {
         description_missing: bool,
@@ -2227,6 +2234,26 @@ dev-dependencies sections of the gleam.toml file.",
                 );
                 Diagnostic {
                     title: "Dependency duplicated".into(),
+                    text,
+                    hint: None,
+                    location: None,
+                    level: Level::Error,
+                }
+            }
+
+            Error::IncorrectGleamVersion {
+                name,
+                required_version,
+                min_version,
+            } => {
+                let text = format!(
+                    "Minimum Gleam version of {} was specified for {} but {} was specified as the minimum for this package",
+                    required_version,
+                    name,
+                    min_version
+                );
+                Diagnostic {
+                    title: "Unsatisfied minimum gleam version".into(),
                     text,
                     hint: None,
                     location: None,

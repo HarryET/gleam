@@ -36,17 +36,23 @@ impl Manifest {
         for ManifestPackage {
             name,
             source,
+            gleam_version,
             version,
             otp_app,
             build_tools,
             requirements,
         } in packages.iter().sorted_by(|a, b| a.name.cmp(&b.name))
         {
+            // TODO gleam version
             buffer.push_str(r#"  {"#);
             buffer.push_str(r#" name = ""#);
             buffer.push_str(name);
             buffer.push_str(r#"", version = ""#);
             buffer.push_str(&version.to_string());
+            if let Some(min_version) = gleam_version {
+                buffer.push_str(r#"", gleam_version = ""#);
+                buffer.push_str(&min_version.to_string());
+            }
             buffer.push_str(r#"", build_tools = ["#);
             for (i, tool) in build_tools.iter().enumerate() {
                 if i != 0 {
@@ -116,6 +122,7 @@ fn manifest_toml_format() {
             ManifestPackage {
                 name: "gleam_stdlib".to_string(),
                 version: Version::new(0, 17, 1),
+                gleam_version: Some(Version::new(0, 17, 0)),
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -126,6 +133,7 @@ fn manifest_toml_format() {
             ManifestPackage {
                 name: "aaa".to_string(),
                 version: Version::new(0, 4, 0),
+                gleam_version: None,
                 build_tools: ["rebar3".into(), "make".into()].into(),
                 otp_app: Some("aaa_app".into()),
                 requirements: vec!["zzz".into(), "gleam_stdlib".into()],
@@ -136,6 +144,7 @@ fn manifest_toml_format() {
             ManifestPackage {
                 name: "zzz".to_string(),
                 version: Version::new(0, 4, 0),
+                gleam_version: None,
                 build_tools: ["mix".into()].into(),
                 otp_app: None,
                 requirements: vec![],
@@ -146,6 +155,7 @@ fn manifest_toml_format() {
             ManifestPackage {
                 name: "gleeunit".to_string(),
                 version: Version::new(0, 4, 0),
+                gleam_version: None,
                 build_tools: ["gleam".into()].into(),
                 otp_app: None,
                 requirements: vec!["gleam_stdlib".into()],
@@ -163,7 +173,7 @@ fn manifest_toml_format() {
 
 packages = [
   { name = "aaa", version = "0.4.0", build_tools = ["rebar3", "make"], requirements = ["zzz", "gleam_stdlib"], otp_app = "aaa_app", source = "hex", outer_checksum = "0316" },
-  { name = "gleam_stdlib", version = "0.17.1", build_tools = ["gleam"], requirements = [], source = "hex", outer_checksum = "0116" },
+  { name = "gleam_stdlib", version = "0.17.1", gleam_version = "0.17.0", build_tools = ["gleam"], requirements = [], source = "hex", outer_checksum = "0116" },
   { name = "gleeunit", version = "0.4.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], source = "hex", outer_checksum = "032E" },
   { name = "zzz", version = "0.4.0", build_tools = ["mix"], requirements = [], source = "hex", outer_checksum = "0316" },
 ]
@@ -213,6 +223,7 @@ impl<'de> serde::Deserialize<'de> for Base16Checksum {
 pub struct ManifestPackage {
     pub name: String,
     pub version: Version,
+    pub gleam_version: Option<Version>,
     pub build_tools: Vec<String>,
     #[serde(default)]
     pub otp_app: Option<String>,
@@ -241,6 +252,7 @@ impl Default for ManifestPackage {
             source: ManifestPackageSource::Hex {
                 outer_checksum: Base16Checksum(vec![]),
             },
+            gleam_version: None,
         }
     }
 }

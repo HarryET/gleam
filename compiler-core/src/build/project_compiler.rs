@@ -1,3 +1,4 @@
+use crate::diagnostic::Diagnostic;
 use crate::{
     build::{
         dep_tree, package_compiler, package_compiler::PackageCompiler, project_compiler,
@@ -13,6 +14,7 @@ use crate::{
     version::COMPILER_VERSION,
     warning, Error, Result, Warning,
 };
+use hexpm::version::Version;
 use itertools::Itertools;
 use std::{
     collections::{HashMap, HashSet},
@@ -131,6 +133,9 @@ where
     /// Returns the compiled information from the root package
     pub fn compile(&mut self) -> Result<Package> {
         self.check_gleam_version()?;
+        if let Some(min_version) = &self.config.gleam_version {
+            self.check_min_version(min_version)?;
+        }
         self.compile_dependencies()?;
 
         if self.options.perform_codegen {
@@ -183,6 +188,37 @@ where
                 path: version_path,
                 err: Some(e.to_string()),
             })
+    }
+
+    /// Run if the package specified a minimum gleam version, it only checks packages that also specify a minimum version
+    pub fn check_min_version(&self, min_gleam_version: &Version) -> Result<(), Error> {
+        // Packages that don't satisfy the minimum version requirements
+        let invalid_packages = self
+            .packages
+            .iter()
+            .filter(|(_, package)| package.gleam_version.is_some())
+            .map(|(_, package)| {
+                // Unwraps gleam version using `unwrap_or` for safety even though we know that it is there from above
+                (
+                    package.name.clone(),
+                    package
+                        .gleam_version
+                        .clone()
+                        .unwrap_or(Version::new(0, 0, 0)),
+                )
+            })
+            .filter(|(name, min_version)| min_version >= min_gleam_version)
+            .collect::<Vec<(String, Version)>>();
+
+        for (name, min_version) in invalid_packages {
+            Err(Error::IncorrectGleamVersion {
+                name: name.clone(),
+                required_version: min_version.to_string(),
+                min_version: min_gleam_version.to_string(),
+            })?
+        }
+
+        Ok(())
     }
 
     pub fn compile_dependencies(&mut self) -> Result<(), Error> {
